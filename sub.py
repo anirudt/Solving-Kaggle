@@ -14,7 +14,7 @@ test = np.genfromtxt(open(workDir + 'test.csv','rb'), delimiter=',')
 
 # This takes in the input without compromising the first row
 
-pca = PCA(n_components=6,whiten=True)
+pca = PCA(n_components=12,whiten=True)
 train = pca.fit_transform(train)
 test = pca.transform(test)
 
@@ -27,12 +27,12 @@ print "hello"
 '''
 preparing the parameters
 '''
-C_range = 10.0 ** np.arange(7,10)
-gamma_range = 10.0 ** np.arange(-4,0)
+C_range = 10.0 ** np.arange(6.5,7.5,0.20)
+gamma_range = 10.0 ** np.arange(-1.5,0.5,0.20)
 
 print "hello"
 params = dict(gamma=gamma_range,C=C_range)
-cvk = StratifiedKFold(target,3)
+cvk = StratifiedKFold(target,3) #no. of folds of cross validation
 print "hello"
 classifier = SVC()
 print "hello"
@@ -45,3 +45,14 @@ scores = cv.cross_val_score(clf.best_estimator_, train, target, cv=30)
 print('Estimated score: %0.5f (+/- %0.5f)' % (scores.mean(), scores.std() / 2))
 
 #answer = 0.92784 for n_components = 12 [initial value]
+#answer = 0.95202 for n_components = 12 and C_range, gamma_range as 6.5, 7.5, 0.25, and -1.5, 0.5, 0.2
+
+result = clf.best_estimator_.predict(test)
+i = np.arange(1,9001);
+i = np.transpose(i)
+result = np.transpose(result)
+result = np.concatenate([i,result])
+print result
+result = result.reshape(2,9000)
+result = np.transpose(result)
+np.savetxt(workDir + 'result.csv', result, delimiter=',', fmt='%d')
